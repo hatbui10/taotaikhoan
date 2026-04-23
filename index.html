@@ -76,6 +76,7 @@
             font-weight: bold;
             text-transform: uppercase;
             cursor: pointer;
+            transition: 0.2s;
         }
 
         button:active {
@@ -104,18 +105,23 @@
 
         textarea {
             width: 100%;
-            height: 250px;
+            height: 300px; /* Tăng chiều cao thêm một chút */
             background: #000;
             color: #00ff41;
-            border: 1px solid #222;
+            border: 1px solid #333;
             border-radius: 8px;
             padding: 10px;
             font-family: 'Courier New', monospace;
-            font-size: 13px;
+            font-size: 14px;
             box-sizing: border-box;
-            resize: none;
+            resize: vertical; /* Cho phép kéo giãn chiều cao */
             margin-top: 10px;
             outline: none;
+            line-height: 1.4;
+        }
+
+        textarea:focus {
+            border-color: var(--neon-pink);
         }
     </style>
 </head>
@@ -136,23 +142,30 @@
         </div>
 
         <div class="btn-grid">
-            <button class="btn-create" onclick="createData()">Tạo kết quả</button>
-            <button class="btn-export" onclick="exportTxt()">Xuất TXT</button>
-            <button class="btn-clear" onclick="clearData()">Xóa toàn bộ dữ liệu</button>
+            <button class="btn-create" onclick="createData()">Thêm vào danh sách</button>
+            <button class="btn-export" onclick="exportTxt()">Xuất file .TXT</button>
+            <button class="btn-clear" onclick="clearData()">Xóa toàn bộ</button>
         </div>
 
-        <textarea id="resultArea" readonly placeholder="Kết quả sẽ hiện ở đây..."></textarea>
+        <textarea id="resultArea" placeholder="Dữ liệu sẽ hiện ở đây. Bạn có thể sửa trực tiếp tại đây..."></textarea>
     </div>
 
     <script>
         let count = 1;
+        const area = document.getElementById('resultArea');
 
+        // Khôi phục dữ liệu khi load trang
         window.onload = () => {
             const savedData = localStorage.getItem('mobile_app_content');
             const savedCount = localStorage.getItem('mobile_app_count');
-            if (savedData) document.getElementById('resultArea').value = savedData;
+            if (savedData) area.value = savedData;
             if (savedCount) count = parseInt(savedCount);
         };
+
+        // Lắng nghe sự kiện gõ trực tiếp vào textarea để lưu lại
+        area.addEventListener('input', () => {
+            localStorage.setItem('mobile_app_content', area.value);
+        });
 
         function createData() {
             const name = document.getElementById('appName').value.trim();
@@ -160,20 +173,22 @@
             const pass = document.getElementById('appPass').value.trim();
 
             if (!name || !id || !pass) {
-                alert("Hãy nhập đủ 3 thông tin!");
+                alert("Hãy nhập đủ thông tin!");
                 return;
             }
 
-            const area = document.getElementById('resultArea');
-            const lineSeparator = "-------------------------\n";
-            const entry = `${count}. App: ${name}\n   ID: ${id}\n   Pass: ${pass}\n${lineSeparator}`;
+            const lineSeparator = "----------------------------------------\n";
+            const entry = `${count}. APP: ${name}\n   ID: ${id}\n   PASS: ${pass}\n${lineSeparator}`;
             
+            // Thêm nội dung mới
             area.value += entry;
             count++;
 
+            // Lưu vào Storage
             localStorage.setItem('mobile_app_content', area.value);
             localStorage.setItem('mobile_app_count', count);
 
+            // Reset input
             document.getElementById('appName').value = '';
             document.getElementById('appId').value = '';
             document.getElementById('appPass').value = '';
@@ -183,22 +198,23 @@
         }
 
         function exportTxt() {
-            const content = document.getElementById('resultArea').value;
-            if (!content) return alert("Chưa có dữ liệu!");
+            // Lấy nội dung hiện tại trong textarea (bao gồm cả phần đã sửa tay)
+            const content = area.value;
+            if (!content) return alert("Chưa có dữ liệu để xuất!");
 
             const blob = new Blob([content], { type: 'text/plain' });
             const link = document.createElement('a');
             const suffix = Math.floor(1000 + Math.random() * 9000);
 
             link.href = URL.createObjectURL(blob);
-            link.download = `Apps_${suffix}.txt`;
+            link.download = `Danh_Sach_App_${suffix}.txt`;
             link.click();
         }
 
         function clearData() {
-            if (confirm("Xóa sạch danh sách và STT?")) {
+            if (confirm("Xóa sạch toàn bộ dữ liệu hiện có?")) {
                 localStorage.clear();
-                document.getElementById('resultArea').value = '';
+                area.value = '';
                 count = 1;
             }
         }
