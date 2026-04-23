@@ -1,681 +1,208 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kiểm Tra Chuỗi Số (Dynamic UI)</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tạo file các tài khoản</title>
+    <style>
+        :root {
+            --neon-blue: #00f2ff;
+            --neon-pink: #ff00ea;
+            --bg-deep: #050505;
+        }
 
-<style>
-body {
-  margin: 0;
-  padding: 30px;
-  background: linear-gradient(135deg, #111, #2b1055);
-  font-family: Arial, sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  min-height: 100vh;
-}
+        body {
+            background-color: var(--bg-deep);
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            /* Quy tắc 3 mép: Trên 30px, 2 bên 3px */
+            margin: 30px 3px 0 3px; 
+            padding-bottom: 20px;
+        }
 
-.container {
-  background: rgba(255,255,255,0.05);
-  padding: 10px;
-  border-radius: 20px;
-  backdrop-filter: blur(15px);
-  box-shadow: 0 0 40px rgba(0,255,255,0.3);
-  text-align: center;
-  width: 95%;
-  max-width: 520px;
-}
+        .container {
+            width: 100%;
+            box-sizing: border-box;
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.1);
+        }
 
-h2 {
-  color: white;
-  margin: 10px auto;
-  font-size: 30px;
-}
-h1 {
-  color: red;
-  margin: 15px;
-}
+        .input-group {
+            margin-bottom: 12px;
+        }
 
+        label {
+            display: block;
+            font-size: 12px;
+            color: var(--neon-blue);
+            margin-bottom: 5px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
 
-#control {
-  margin-bottom: 20px;
-  gap: 20px; 
-}
+        input {
+            width: 100%;
+            height: 45px; /* Chiều cao tối ưu cho cảm ứng */
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #fff;
+            padding: 0 12px;
+            box-sizing: border-box;
+            font-size: 16px; /* Tránh tự động zoom trên iPhone */
+            outline: none;
+            transition: 0.3s;
+        }
 
-#control input {
-  width: 80px;
-  padding: 8px;
-  font-size: 18px;
-  text-align: center;
-  border-radius: 8px;
-  border: none;
+        input:focus {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 8px var(--neon-blue);
+        }
 
-}
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 2fr 1.5fr;
+            gap: 8px;
+            margin: 15px 0;
+        }
 
-#control button {
-  margin-left: 20px;
-}
+        button {
+            height: 50px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            active-transform: scale(0.95);
+        }
 
-#boxes {
-  margin-bottom: 20px;
-}
+        .btn-create {
+            background: var(--neon-blue);
+            color: #000;
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+        }
 
-.box {
-  width: 45px;
-  height: 45px;
-  margin: 5px;
-  font-size: 18px;
-  text-align: center;
-  border-radius: 12px;
-  border: none;
-  outline: none;
-}
+        .btn-export {
+            background: var(--neon-pink);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(255, 0, 234, 0.3);
+        }
 
-.readonly {
-  background: #233D4D;
-  color: #00ffff;
-}
+        .btn-clear {
+            background: #222;
+            color: #888;
+            grid-column: span 2;
+            height: 40px;
+            margin-top: 5px;
+        }
 
-.inputbox {
-  background: #fff;
-  color: #000;
-}
-
-
-
-
-#resultBox {
-  background: #000;
-  color: white;
-  font-size: 30px;
-  font-weight: bold;
-  padding: 15px;
-  border-radius: 12px;
-  width: 120px;
-  margin: 6px auto;
-}
-
-.success {
-  background: #261CC1 !important;
-  color: white !important;
-
-}
-
-.fail {
-  background: #6E5034 !important;
-  color: white !important;
-}
-
-
-button {
-  padding: 10px 22px;
-  font-size: 16px;
-  margin: 10px auto;
-  font-weight: bold;
-  border-radius: 10px;
-  
-  border: none;
-  cursor: pointer;
-  color: #00ffff;
-  background: rgba(0, 255, 255, 0.08);
-  backdrop-filter: blur(10px);
-  box-shadow: 
-    0 0 8px rgba(0,255,255,0.4),
-    inset 0 0 6px rgba(0,255,255,0.2);
-  transition: all 0.25s ease;
-}
-
-button:hover {
-  background: rgba(0,255,255,0.2);
-  box-shadow: 
-    0 0 15px rgba(0,255,255,0.8),
-    0 0 25px rgba(0,255,255,0.4);
-  transform: translateY(-2px);
-}
-
-button:active {
-  transform: scale(0.95);
-  box-shadow: 
-    0 0 8px rgba(0,255,255,0.6);
-}
-
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-
-/* Cột chứa toàn bộ phần copy */
-#copyColumn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  margin-top: 10px;
-}
-
-/* Copy 1 & Copy 2 (hai ô input giống nhau) */
-#copyBox1,
-#copyBox2 {
-  background: #982598;
-  color: white;
-  font-weight: bold;
-  width: 30%;
-  padding: 12px;
-  font-size: 30px;
-  border-radius: 12px;
-  border: none;
-  text-align: center;
-}
-
-/* Textarea lưu danh sách */
-#copyBoxTextarea {
-  width: 70%;
-  height: 100px;
-  padding: 12px;
-  border-radius: 12px;
-  font-size: 16px;
-  resize: none;
-  border: none;
-  outline: none;
-}
-
-.buttonRow {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  width: 100%;
-}
-
-  
-  #inputHistoryTextarea {
-  width: 70%;
-  height: 80px;
-  padding: 12px;
-  border-radius: 12px;
-  font-size: 16px;
-  resize: none;
-  border: none;
-  outline: none;
-}
-  
-  
-  #copyBoxTextarea3 {
-  width: 70%;
-  height: 100px;
-  padding: 12px;
-  border-radius: 12px;
-  font-size: 16px;
-  resize: none;
-  border: none;
-  outline: none;
-}
-  .neutral {
-  background: red !important;
-  color: white !important;
-  }
-  
-
-
-</style>
+        textarea {
+            width: 100%;
+            height: 250px;
+            background: #000;
+            color: #00ff41;
+            border: 1px solid #222;
+            border-radius: 8px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            box-sizing: border-box;
+            resize: none;
+            margin-top: 10px;
+            outline: none;
+        }
+    </style>
 </head>
-
 <body>
 
+    <div class="container">
+        <div class="input-group">
+            <label>Ứng dụng</label>
+            <input type="text" id="appName" placeholder="Tên App..." autocomplete="off">
+        </div>
+        <div class="input-group">
+            <label>ID / Tài khoản</label>
+            <input type="text" id="appId" placeholder="ID..." autocomplete="off">
+        </div>
+        <div class="input-group">
+            <label>Mật khẩu</label>
+            <input type="text" id="appPass" placeholder="Mật khẩu..." autocomplete="off">
+        </div>
 
-  <div class="container">
+        <div class="btn-grid">
+            <button class="btn-create" onclick="createData()">Tạo kết quả</button>
+            <button class="btn-export" onclick="exportTxt()">Xuất TXT</button>
+            <button class="btn-clear" onclick="clearData()">Xóa toàn bộ dữ liệu</button>
+        </div>
 
-  <h2>Kiểm Tra Chuỗi Số</h2>
-  <div id="resultBox">Đang tải...</div>
-
-  <!-- Ô hiển thị số -->
-  <div id="boxes"></div>
-
-  <!-- Khu vực Copy -->
-  <div id="copyColumn">
-
-    <input
-      type="text"
-      id="copyBox1"
-      readonly
-      placeholder="Copy 1"
-    >
-
-    <input
-      type="text"
-      id="copyBox2"
-      readonly
-      placeholder="Copy 2"
-    >
-
-    <textarea
-      id="copyBoxTextarea"
-      readonly
-      placeholder="Danh sách >= 5"
-    ></textarea>
-
-    <button id="copyBtn" onclick="copyToClipboard()">
-      Copy
-    </button>
-
-    <textarea
-      id="inputHistoryTextarea"
-      readonly
-      placeholder="Lịch sử nhập"
-    ></textarea>
-
-    <textarea
-      id="copyBoxTextarea3"
-      readonly
-      placeholder="Danh sách < 5"
-    ></textarea>
-
-    <button id="copyHistoryBtn" onclick="copyHistory()">
-      Copy 2
-    </button>
-
-    <div class="buttonRow">
-      <button onclick="exportTxt()">
-        Xuất TXT
-      </button>
+        <textarea id="resultArea" readonly placeholder="Kết quả sẽ hiện ở đây..."></textarea>
     </div>
 
-  </div>
-
-  <!-- Điều khiển số ô -->
-  <div id="control">
-    <h1>Số ô kiểm tra:</h1>
-
-    <input
-      type="tel"
-      id="boxCountInput"
-      inputmode="numeric"
-      pattern="[0-9]*"
-      min="1"
-      max="20"
-      value="3"
-    >
-
-    <button onclick="applyBoxCount()">
-      Tạo
-    </button>
-  </div>
-
-</div>
-  
-  
-  
-  
-
-<script>
-
-const ipfsURL = "https://tomato-delicate-zebra-533.mypinata.cloud/ipfs/bafkreigfifp3b3tqtby2xgbq2syhvdh7zbhkgqf7s2pchw3jp4pxs4npoi";
-  
-  
-// ===== DATA =====
-let dataSet = new Set();
-let dataSet2 = new Set();
-let currentDigits = [];
-let CHECK_BOX_COUNT = 3;
-let savedList = [];
-let prevDigits = [];
-let savedListLess5 = [];
-  
-  
-  
-  
-  
-  // ===== DATA CONST =====
-const DATA_1 = [
-"002","006","007","008","011","014","015","017","027","034","036","039","040","041","043","044","047","055","058","068","070","071","072","075","076","077","080","083","085","090","095","096","098",
-"105","115","117","120","122","124","129","131","132","136","137","138","139","144","149","152","155","159","165","167","170","176","177","181","186","190","192","195","196","197","198","199",
-"205","207","210","213","218","219","221","226","229","230","242","244","246","249","251","259","260","263","265","273","274","275","276","278","281","282","283","286","290","291","295","297",
-"300","301","303","304","309","310","311","319","321","322","324","327","331","338","340","346","347","349","365","366","371","375","377","380","384","387","389","390","399",
-"400","402","403","404","412","415","418","430","431","432","434","437","442","445","451","454","457","461","463","464","465","469","480","484","494","496",
-"506","512","513","515","524","526","529","532","533","538","544","545","546","547","551","552","553","555","556","557","559","560","563","569","573","575","576","578","580","582","592","596","597",
-"601","603","605","610","611","612","613","615","621","622","631","634","636","639","645","646","647","650","653","654","655","658","670","690","691","695","699",
-"700","701","703","709","710","712","718","721","728","730","731","733","735","739","740","745","746","752","753","756","757","758","759","761","765","772","773","774","777","778","780","782","783","788","789","795",
-"800","804","807","808","812","814","820","823","829","832","834","838","842","844","849","854","856","858","864","865","869","872","873","880","888","894","895","896","898",
-"905","908","909","910","911","916","917","918","924","931","947","951","955","957","959","966","969","975","977","978","979","980","982","985","987","988","989","990","991","995","999",
-"159","241","415","596","689","897","968"
-];
-
-const DATA_2 = [
-"064","086",
-"154","174","185","191",
-"215","223","293",
-"306","317","326","329","333","355","386",
-"406","410","417","425","475","489","492","493",
-"503","507","508","522","549","561","593","594","599",
-"644","652","659","674",
-"719","726","741","749","787","796",
-"806","850","862","867","885",
-"912","922","925","933","956","965",
-"120","123","212","233","334","341","412"
-];
-
-
-  
-  
-  
-
-// ===== DOM =====
-const boxesContainer = document.getElementById("boxes");
-const boxCountInput = document.getElementById("boxCountInput");
-const result = document.getElementById("resultBox");
-const copyBoxTextarea3 = document.getElementById("copyBoxTextarea3");
-const copyBox1 = document.getElementById("copyBox1");
-const copyBox2 = document.getElementById("copyBox2");
-const copyBoxTextarea = document.getElementById("copyBoxTextarea");
-const inputHistoryTextarea = document.getElementById("inputHistoryTextarea");
-const copyBtn = document.getElementById("copyBtn");
-  
-  
-  // Gán vào Set
-dataSet = new Set(DATA_1);
-dataSet2 = new Set(DATA_2);
-
-result.textContent = "Sẵn sàng";
-  
-  
-  
-function applyBoxCount() {
-
-  const value = parseInt(boxCountInput.value);
-
-  if (!value || value < 1) return;
-
-  CHECK_BOX_COUNT = value;
-  currentDigits = [];
-  createBoxes();
-}
-
-
-
-
-function createBoxes() {
-
-  boxesContainer.innerHTML = "";
-
-  const TOTAL = CHECK_BOX_COUNT + 1; // +1 là ô nhập
-
-  for (let i = 0; i < TOTAL; i++) {
-
-    const input = document.createElement("input");
-    input.type = "tel";
-    input.maxLength = 1;
-    input.inputMode = "numeric";
-    input.pattern = "[0-9]*";
-    input.classList.add("box");
-
-    if (i === TOTAL - 1) {
-      input.classList.add("inputbox");
-      input.addEventListener("input", handleInput);
-    } else {
-      input.classList.add("readonly");
-      input.readOnly = true;
-    }
-
-    boxesContainer.appendChild(input);
-  }
-
-  focusInputBox();
-}
-
-
-
-
-function focusInputBox() {
-  const all = boxesContainer.querySelectorAll("input");
-  const inputBox = all[all.length - 1];
-  inputBox.value = "";
-  inputBox.focus();
-}
-
-
-
-
-function handleInput(e) {
-  const digit = e.target.value.replace(/\D/g, "").slice(0,1);
-  if (!digit) return;
-
-  // Đẩy digit mới vào current
-  currentDigits.push(digit);
-  // Ghi lại toàn bộ số nhập, cách nhau bằng dấu cách
-if (inputHistoryTextarea.value === "") {
-  inputHistoryTextarea.value = digit;
-} else {
-  inputHistoryTextarea.value += " " + digit;
-}
-
-inputHistoryTextarea.scrollTop = inputHistoryTextarea.scrollHeight;
-
-  if (currentDigits.length > CHECK_BOX_COUNT) {
-    const shifted = currentDigits.shift();
-
-    // shifted này chính là phần tử bị đẩy ra
-    prevDigits.push(shifted);
-
-    if (prevDigits.length > CHECK_BOX_COUNT) {
-      prevDigits.shift();
-    }
-  }
-
-  updateDisplay();
-  updateCopyBoxes();
-
-  if (
-  currentDigits.length === CHECK_BOX_COUNT &&
-  (dataSet.size || dataSet2.size)
-) {
-  checkValue();
-}
-
-  focusInputBox();
-}
-
-
-
-
-function updateDisplay() {
-
-  const all = boxesContainer.querySelectorAll("input");
-
-  for (let i = 0; i < CHECK_BOX_COUNT; i++) {
-    all[i].value = currentDigits[i] || "";
-  }
-}
-
-
-
-
-function checkValue() {
-
-  const value = currentDigits.join("");
-
-  
-
-  // ===== Điều kiện: tất cả chữ số Copy1 >= 5 =====
-  const allDigitsGTE5 = value
-    .split("")
-    .every(d => Number(d) >= 5);
-  
-  const allDigitsLT5 = value
-  .split("")
-  .every(d => Number(d) < 5);
-    
-    
-
-  if (
-  allDigitsGTE5 &&
-  copyBox2.value.length === CHECK_BOX_COUNT
-) {
-
-    // Thêm vào danh sách (không thêm dấu " ở đây)
-    savedList.push(copyBox2.value);
-
-    // ===== SẮP XẾP TOÀN BỘ DANH SÁCH =====
-    savedList.sort((a, b) => Number(a) - Number(b));
-
-    // ===== Chia 20 số / dòng =====
-    const chunkSize = 20;
-    let lines = [];
-
-    for (let i = 0; i < savedList.length; i += chunkSize) {
-      lines.push(
-        savedList
-          .slice(i, i + chunkSize)
-          .map(v => `"${v}"`)
-          .join(",")
-      );
-    }
-
-    copyBoxTextarea.value = lines.join("\n");
-    copyBoxTextarea.scrollTop = copyBoxTextarea.scrollHeight;
-  }
-
-    
-    
-    
-    if (
-  allDigitsLT5 &&
-  copyBox2.value.length === CHECK_BOX_COUNT
-) {
-
-  savedListLess5.push(copyBox2.value);
-
-  savedListLess5.sort((a, b) => Number(a) - Number(b));
-
-  const chunkSize = 20;
-  let lines = [];
-
-  for (let i = 0; i < savedListLess5.length; i += chunkSize) {
-    lines.push(
-      savedListLess5
-        .slice(i, i + chunkSize)
-        .map(v => `"${v}"`)
-        .join(",")
-    );
-  }
-
-  copyBoxTextarea3.value = lines.join("\n");
-  copyBoxTextarea3.scrollTop = copyBoxTextarea3.scrollHeight;
-}
-    
-    
-  // ===== Kiểm tra dataset =====
-result.classList.remove("success", "fail");
-
-// Nếu có trong const 1
-if (dataSet.has(value)) {
-
-  result.textContent = "1";
-  result.classList.add("success");
-
-}
-// Nếu có trong const 2
-else if (dataSet2.has(value)) {
-
-  result.textContent = "0";
-  result.classList.add("fail");
-
-}
-// Nếu không có ở đâu → bỏ qua
-else {
-
-  result.textContent = "Bỏ qua";
-  result.classList.remove("success", "fail");
-  result.classList.add("neutral");
-
-}
-}
-
-
-
-
-
-function copyToClipboard() {
-
-  const text = copyBoxTextarea.value;
-
-  if (!text) return;
-
-  navigator.clipboard.writeText(text)
-    .then(() => {
-      copyBtn.textContent = "Đã Copy";
-      setTimeout(() => {
-        copyBtn.textContent = "Copy";
-      }, 1000);
-    });
-}
-
-
-
-function updateCopyBoxes() {
-  copyBox1.value = currentDigits.join("");
-  copyBox2.value = prevDigits.join("");
-}
-
-
-
-
-
-
-function exportTxt() {
-
-  if (!savedList.length) return;
-
-  // Chia 20 số / dòng giống textarea
-  const chunkSize = 20;
-  let lines = [];
-
-  for (let i = 0; i < savedList.length; i += chunkSize) {
-    lines.push(savedList.slice(i, i + chunkSize).join(","));
-  }
-
-  const content = lines.join("\n");
-
-  const blob = new Blob([content], { type: "text/plain" });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "danhsach_so.txt";
-  a.click();
-
-  URL.revokeObjectURL(url);
-}
-
-
-
-
-function copyHistory() {
-
-  const text = copyBoxTextarea3.value; // đổi sang textarea < 5
-
-  if (!text) return;
-
-  navigator.clipboard.writeText(text)
-    .then(() => {
-      const btn = document.getElementById("copyHistoryBtn");
-      btn.textContent = "Đã Copy";
-      setTimeout(() => {
-        btn.textContent = "Copy 2";
-      }, 1000);
-    });
-
-}
-createBoxes();
-
-</script>
-
+    <script>
+        let count = 1;
+
+        // Khôi phục dữ liệu
+        window.onload = () => {
+            const savedData = localStorage.getItem('mobile_app_content');
+            const savedCount = localStorage.getItem('mobile_app_count');
+            if (savedData) document.getElementById('resultArea').value = savedData;
+            if (savedCount) count = parseInt(savedCount);
+        };
+
+        function createData() {
+            const name = document.getElementById('appName').value.trim();
+            const id = document.getElementById('appId').value.trim();
+            const pass = document.getElementById('appPass').value.trim();
+
+            if (!name || !id || !pass) {
+                alert("Hãy nhập đủ 3 thông tin!");
+                return;
+            }
+
+            const area = document.getElementById('resultArea');
+            const entry = `${count}. ${name} | ID: ${id} | Pass: ${pass}\n`;
+            
+            area.value += entry;
+            count++;
+
+            // Lưu LocalStorage
+            localStorage.setItem('mobile_app_content', area.value);
+            localStorage.setItem('mobile_app_count', count);
+
+            // Xóa input & focus lại ô đầu
+            document.getElementById('appName').value = '';
+            document.getElementById('appId').value = '';
+            document.getElementById('appPass').value = '';
+            document.getElementById('appName').focus();
+            
+            // Tự động cuộn xuống cuối textarea
+            area.scrollTop = area.scrollHeight;
+        }
+
+        function exportTxt() {
+            const content = document.getElementById('resultArea').value;
+            if (!content) return alert("Chưa có dữ liệu!");
+
+            const blob = new Blob([content], { type: 'text/plain' });
+            const link = document.createElement('a');
+            const suffix = Math.floor(1000 + Math.random() * 9000);
+
+            link.href = URL.createObjectURL(blob);
+            link.download = `Apps_${suffix}.txt`;
+            link.click();
+        }
+
+        function clearData() {
+            if (confirm("Xóa sạch danh sách và STT?")) {
+                localStorage.clear();
+                document.getElementById('resultArea').value = '';
+                count = 1;
+            }
+        }
+    </script>
 </body>
 </html>
-
-
-
-
-
