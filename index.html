@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tạo file các tài khoản</title>
+    <title>Quản lý tài khoản - Chống lỗi Font</title>
     <style>
         :root {
             --neon-blue: #00f2ff;
             --neon-pink: #ff00ea;
+            --neon-gold: #ffcc00;
             --bg-deep: #050505;
         }
 
@@ -15,27 +16,32 @@
             background-color: var(--bg-deep);
             color: #fff;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            margin: 30px 3px 0 3px; 
+            margin: 20px 5px;
             padding-bottom: 20px;
         }
 
         .container {
             width: 100%;
             box-sizing: border-box;
-            background: rgba(20, 20, 20, 0.8);
+            background: rgba(20, 20, 20, 0.95);
             border: 1px solid rgba(0, 242, 255, 0.3);
             border-radius: 12px;
             padding: 15px;
-            box-shadow: 0 0 15px rgba(0, 242, 255, 0.1);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.1);
         }
 
-        .input-group {
-            margin-bottom: 12px;
+        .auth-box {
+            background: #111;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--neon-gold);
+            margin-bottom: 20px;
+            text-align: center;
         }
 
         label {
             display: block;
-            font-size: 12px;
+            font-size: 11px;
             color: var(--neon-blue);
             margin-bottom: 5px;
             font-weight: bold;
@@ -52,168 +58,163 @@
             padding: 0 12px;
             box-sizing: border-box;
             font-size: 16px;
+            margin-bottom: 10px;
             outline: none;
-            transition: 0.3s;
         }
 
-        input:focus {
-            border-color: var(--neon-blue);
-            box-shadow: 0 0 8px var(--neon-blue);
+        #accessPass {
+            border-color: var(--neon-gold);
+            text-align: center;
+            letter-spacing: 5px;
+        }
+
+        .btn-auth {
+            background: var(--neon-gold);
+            color: #000;
+            width: 100%;
+            height: 45px;
+            font-weight: bold;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
         }
 
         .btn-grid {
             display: grid;
-            grid-template-columns: 2fr 1.5fr;
-            gap: 8px;
-            margin: 15px 0;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
         }
 
-        button {
-            height: 50px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: bold;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: 0.2s;
-        }
+        button { cursor: pointer; transition: 0.2s; border: none; font-weight: bold; border-radius: 8px; }
+        button:active { transform: scale(0.95); }
 
-        button:active {
-            transform: scale(0.95);
-        }
-
-        .btn-create {
-            background: var(--neon-blue);
-            color: #000;
-            box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
-        }
-
-        .btn-export {
-            background: var(--neon-pink);
-            color: #fff;
-            box-shadow: 0 0 10px rgba(255, 0, 234, 0.3);
-        }
-
-        .btn-clear {
-            background: #222;
-            color: #888;
-            grid-column: span 2;
-            height: 40px;
-            margin-top: 5px;
-        }
+        .btn-create { background: var(--neon-blue); color: #000; height: 50px; }
+        .btn-export { background: var(--neon-pink); color: #fff; height: 50px; }
+        .btn-clear { background: #222; color: #888; grid-column: span 2; height: 35px; margin-top: 5px;}
 
         textarea {
             width: 100%;
-            height: 300px; /* Tăng chiều cao thêm một chút */
+            height: 300px;
             background: #000;
             color: #00ff41;
             border: 1px solid #333;
             border-radius: 8px;
             padding: 10px;
             font-family: 'Courier New', monospace;
-            font-size: 14px;
+            margin-top: 15px;
             box-sizing: border-box;
-            resize: vertical; /* Cho phép kéo giãn chiều cao */
-            margin-top: 10px;
-            outline: none;
-            line-height: 1.4;
+            opacity: 0.1;
+            pointer-events: none;
         }
 
-        textarea:focus {
-            border-color: var(--neon-pink);
+        .unlocked textarea {
+            opacity: 1;
+            pointer-events: auto;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="input-group">
-            <label>Ứng dụng</label>
-            <input type="text" id="appName" placeholder="Tên App..." autocomplete="off">
-        </div>
-        <div class="input-group">
-            <label>ID / Tài khoản</label>
-            <input type="text" id="appId" placeholder="ID..." autocomplete="off">
-        </div>
-        <div class="input-group">
-            <label>Mật khẩu</label>
-            <input type="text" id="appPass" placeholder="Mật khẩu..." autocomplete="off">
+    <div class="container" id="appContainer">
+        <div class="auth-box" id="lockScreen">
+            <label style="color: var(--neon-gold)">NHẬP MẬT KHẨU ĐỂ XEM DỮ LIỆU</label>
+            <input type="password" id="accessPass" placeholder="****">
+            <button class="btn-auth" onclick="unlock()">MỞ KHÓA</button>
         </div>
 
-        <div class="btn-grid">
-            <button class="btn-create" onclick="createData()">Thêm vào danh sách</button>
-            <button class="btn-export" onclick="exportTxt()">Xuất file .TXT</button>
-            <button class="btn-clear" onclick="clearData()">Xóa toàn bộ</button>
-        </div>
+        <div id="mainUI">
+            <div class="input-group">
+                <label>Tên Ứng dụng</label>
+                <input type="text" id="appName" placeholder="Ví dụ: Facebook, Gmail...">
+            </div>
+            <div class="input-group">
+                <label>ID / Tài khoản</label>
+                <input type="text" id="appId" placeholder="Tên đăng nhập...">
+            </div>
+            <div class="input-group">
+                <label>Mật khẩu</label>
+                <input type="text" id="appPass" placeholder="Mật khẩu...">
+            </div>
 
-        <textarea id="resultArea" placeholder="Dữ liệu sẽ hiện ở đây. Bạn có thể sửa trực tiếp tại đây..."></textarea>
+            <div class="btn-grid">
+                <button class="btn-create" onclick="add()">THÊM MỚI</button>
+                <button class="btn-export" onclick="exportFile()">XUẤT FILE .TXT</button>
+                <button class="btn-clear" onclick="clearAll()">XÓA TẤT CẢ</button>
+            </div>
+
+            <textarea id="resultArea" readonly placeholder="Dữ liệu sẽ hiện sau khi nhập mật khẩu..."></textarea>
+        </div>
     </div>
 
     <script>
+        const PASS = 'Hatbuivohinh Trrldtb Tcbcqtn Tmtltgbt Ltgcdmv 9420,./'; // Đổi mật khẩu tại đây
         let count = 1;
         const area = document.getElementById('resultArea');
 
-        // Khôi phục dữ liệu khi load trang
-        window.onload = () => {
-            const savedData = localStorage.getItem('mobile_app_content');
-            const savedCount = localStorage.getItem('mobile_app_count');
-            if (savedData) area.value = savedData;
-            if (savedCount) count = parseInt(savedCount);
-        };
+        function unlock() {
+            const input = document.getElementById('accessPass').value;
+            if (input === PASS) {
+                document.getElementById('appContainer').classList.add('unlocked');
+                document.getElementById('lockScreen').style.display = 'none';
+                area.readOnly = false;
 
-        // Lắng nghe sự kiện gõ trực tiếp vào textarea để lưu lại
-        area.addEventListener('input', () => {
-            localStorage.setItem('mobile_app_content', area.value);
-        });
+                // Lấy dữ liệu cũ từ Key của bạn
+                const oldData = localStorage.getItem('mobile_app_content');
+                const oldCount = localStorage.getItem('mobile_app_count');
+                
+                if (oldData) area.value = oldData;
+                if (oldCount) count = parseInt(oldCount);
+                
+                alert("Mở khóa thành công!");
+            } else {
+                alert("Mật khẩu sai!");
+            }
+        }
 
-        function createData() {
+        function add() {
             const name = document.getElementById('appName').value.trim();
             const id = document.getElementById('appId').value.trim();
             const pass = document.getElementById('appPass').value.trim();
 
-            if (!name || !id || !pass) {
-                alert("Hãy nhập đủ thông tin!");
-                return;
-            }
+            if(!name || !id || !pass) return alert("Vui lòng nhập đủ thông tin!");
 
-            const lineSeparator = "----------------------------------------\n";
-            const entry = `${count}. APP: ${name}\n   ID: ${id}\n   PASS: ${pass}\n${lineSeparator}`;
-            
-            // Thêm nội dung mới
+            const entry = `${count}. APP: ${name}\n   ID: ${id}\n   PASS: ${pass}\n----------------------------------------\n`;
             area.value += entry;
             count++;
 
-            // Lưu vào Storage
             localStorage.setItem('mobile_app_content', area.value);
             localStorage.setItem('mobile_app_count', count);
-
-            // Reset input
+            
+            // Xóa input sau khi thêm
             document.getElementById('appName').value = '';
             document.getElementById('appId').value = '';
             document.getElementById('appPass').value = '';
-            document.getElementById('appName').focus();
-            
-            area.scrollTop = area.scrollHeight;
         }
 
-        function exportTxt() {
-            // Lấy nội dung hiện tại trong textarea (bao gồm cả phần đã sửa tay)
+        area.addEventListener('input', () => {
+            localStorage.setItem('mobile_app_content', area.value);
+        });
+
+        function exportFile() {
+            if(!area.value) return alert("Không có dữ liệu!");
+
+            // GIẢI PHÁP SỬA LỖI FONT: Thêm BOM (Byte Order Mark) cho UTF-8
+            const BOM = new Uint8Array([0xEF, 0xBB, 0xBF]);
             const content = area.value;
-            if (!content) return alert("Chưa có dữ liệu để xuất!");
-
-            const blob = new Blob([content], { type: 'text/plain' });
-            const link = document.createElement('a');
-            const suffix = Math.floor(1000 + Math.random() * 9000);
-
-            link.href = URL.createObjectURL(blob);
-            link.download = `Danh_Sach_App_${suffix}.txt`;
-            link.click();
+            const blob = new Blob([BOM, content], { type: 'text/plain;charset=utf-8' });
+            
+            const a = document.createElement('a');
+            const date = new Date().toLocaleDateString('vi-VN').replace(/\//g, '-');
+            a.href = URL.createObjectURL(blob);
+            a.download = `Tai_Khoan_Backup_${date}.txt`;
+            a.click();
         }
 
-        function clearData() {
-            if (confirm("Xóa sạch toàn bộ dữ liệu hiện có?")) {
-                localStorage.clear();
+        function clearAll() {
+            if(confirm("Bạn có chắc chắn muốn xóa SẠCH dữ liệu không?")) {
+                localStorage.removeItem('mobile_app_content');
+                localStorage.removeItem('mobile_app_count');
                 area.value = '';
                 count = 1;
             }
